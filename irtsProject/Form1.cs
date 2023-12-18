@@ -1,10 +1,17 @@
-﻿using Microsoft.VisualBasic.Logging;
+﻿using System;
+using System.Windows.Forms;
+using Serilog;
+using Microsoft.VisualBasic.Logging;
 using System.Windows.Forms;
 
 namespace irtsProject
 {
     public partial class Form1 : Form
     {
+        // Initialize Serilog logger
+        private static readonly ILogger Logger = new LoggerConfiguration()
+            .WriteTo.File("log.txt") // Specify the log file
+            .CreateLogger();
         public DatabaseConnection db;
 
         public HuviinMedeelel hm = null;
@@ -95,15 +102,18 @@ namespace irtsProject
                 if (db.checkUser(login.textBox1.Text, login.textBox2.Text))
                 {
                     login.Hide();
+                    Logger.Information("User logged in", login.textBox1.Text);
                 }
                 else
                 {
                     MessageBox.Show("Нэвтрэх нэр, нууц үг буруу.");
+                    Logger.Warning("Login failed for user", login.textBox1.Text);
                 }
             }
             else
             {
                 MessageBox.Show("Мэдээлэл бүрэн оруулна уу.");
+                Logger.Warning("Incomplete login information");
             }
         }
         /// <summary>
